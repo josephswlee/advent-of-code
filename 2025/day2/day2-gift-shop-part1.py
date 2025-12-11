@@ -60,5 +60,4 @@ ans = 0
 for i in invalid_ids:
     ans += i
 
-print(invalid_ids)
 print(ans)

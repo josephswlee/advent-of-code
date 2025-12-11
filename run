@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# run beforehend: chmod +x run
+
+# 1. Get arguments
+DAY=$1
+MODE=$2
+YEAR="2025"
+DIR="$YEAR/$DAY"
+
+# 2. Validation: Check if directory exists
+if [ ! -d "$DIR" ]; then
+    echo "Error: Directory $DIR does not exist."
+    exit 1
+fi
+
+# 3. Find the Python script
+# Looks for any .py file in that day's folder. 
+# (Takes the first one found if there are multiple).
+SCRIPT=$(find "$DIR" -maxdepth 1 -name "*.py" | head -n 1)
+
+if [ -z "$SCRIPT" ]; then
+    echo "Error: No Python script found in $DIR"
+    exit 1
+fi
+
+# 4. Find the Input file
+if [ "$MODE" == "test" ]; then
+    # Find a .txt file that HAS "test" in the name
+    INPUT=$(find "$DIR" -maxdepth 1 -name "*test*.txt" | head -n 1)
+else
+    # Find a .txt file that does NOT have "test" in the name
+    INPUT=$(find "$DIR" -maxdepth 1 -name "*.txt" ! -name "*test*" | head -n 1)
+fi
+
+if [ -z "$INPUT" ]; then
+    echo "Error: No matching input file found in $DIR"
+    exit 1
+fi
+
+# 5. Print and Run
+echo "Running: python3 $SCRIPT --file $INPUT"
+echo "---------------------------------------------------"
+python3 "$SCRIPT" --file "$INPUT"
