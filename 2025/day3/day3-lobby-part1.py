@@ -6,9 +6,9 @@ https://adventofcode.com/2025/day/3
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Pass in the password text file")
+parser = argparse.ArgumentParser(description="Pass in the banks text file")
 
-parser.add_argument("--file", type=str, help="input.txt for the day 2 of advent of code")
+parser.add_argument("--file", type=str, help="input.txt for the day 3 of advent of code")
 
 args = parser.parse_args()
 

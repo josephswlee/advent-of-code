@@ -66,6 +66,8 @@ for i in range(len(lines)):
 
     output.append(dial)
 
+print(passcode)
+
 """
 Debug code 
 
