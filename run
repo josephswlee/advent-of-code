@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# Usage: ./run dayX [part_number] [test]
+# Examples:
+#   ./run day2          -> Runs part1 script, real input
+#   ./run day2 test     -> Runs part1 script, test input (smart detection)
+#   ./run day2 2        -> Runs part2 script, real input
+#   ./run day2 2 test   -> Runs part2 script, test input
+
+# run `chmod +x run` beforehand
+
+# 1. Get arguments
+DAY=$1
+ARG2=$2
+ARG3=$3
+
+YEAR="2025"
+DIR="$YEAR/$DAY"
+
+# Determine PART and MODE based on arguments
+# Default to Part 1
+PART="1"
+MODE="real"
+
+# Logic to handle flexible arguments
+if [[ "$ARG2" == "test" ]]; then
+    MODE="test"
+elif [[ -n "$ARG2" ]]; then
+    PART="$ARG2"
+    if [[ "$ARG3" == "test" ]]; then
+        MODE="test"
+    fi
+fi
+
+# 2. Validation: Check if directory exists
+if [ ! -d "$DIR" ]; then
+    echo "Error: Directory $DIR does not exist."
+    exit 1
+fi
+
+# 3. Find the Python script
+# We look for a file that contains "partX" or just defaults to *.py if only one exists
+# We grep for the part number to ensure we get the right script
+SCRIPT=$(find "$DIR" -maxdepth 1 -name "*.py" | grep -i "part$PART" | head -n 1)
+
+# Fallback: If no "partX" specific file is found, try finding ANY python file
+# (Useful for Day 1 where you might not have named it 'part1.py')
+if [ -z "$SCRIPT" ]; then
+    SCRIPT=$(find "$DIR" -maxdepth 1 -name "*.py" | head -n 1)
+fi
+
+if [ -z "$SCRIPT" ]; then
+    echo "Error: No Python script found for Part $PART in $DIR"
+    exit 1
+fi
+
+# 4. Find the Input file
+# We try to match the part number in the input file too (e.g., day2-input-part2.txt)
+if [ "$MODE" == "test" ]; then
+    # Try to find input with "partX" AND "test"
+    INPUT=$(find "$DIR" -maxdepth 1 -name "*test*.txt" | grep -i "part$PART" | head -n 1)
+    
+    # Fallback: If specific part test file doesn't exist, just grab any test file
+    if [ -z "$INPUT" ]; then
+        INPUT=$(find "$DIR" -maxdepth 1 -name "*test*.txt" | head -n 1)
+    fi
+else
+    # Real Input: Look for "partX" and NOT "test"
+    INPUT=$(find "$DIR" -maxdepth 1 -name "*.txt" ! -name "*test*" | grep -i "part$PART" | head -n 1)
+    
+    # Fallback: If specific part input file doesn't exist, grab any non-test input
+    if [ -z "$INPUT" ]; then
+        INPUT=$(find "$DIR" -maxdepth 1 -name "*.txt" ! -name "*test*" | head -n 1)
+    fi
+fi
+
+if [ -z "$INPUT" ]; then
+    echo "Error: No matching input file found in $DIR"
+    exit 1
+fi
+
+# 5. Print and Run
+echo "---------------------------------------------------"
+echo "Day:    $DAY"
+echo "Part:   $PART"
+echo "Mode:   $MODE"
+echo "Script: $SCRIPT"
+echo "Input:  $INPUT"
+echo "---------------------------------------------------"
+
+# execute the python script
+python3 "$SCRIPT" --file "$INPUT"
