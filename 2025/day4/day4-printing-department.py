@@ -19,8 +19,8 @@ with open(args.file, 'r') as file:
         rows = list(line.strip())
         grids.append(rows)
 
-rows = len(grids[0])
-cols = len(grids)
+rows = len(grids)
+cols = len(grids[0])
 
 def check_paper_roll(grids, row, col):
     if grids[row][col] == '@':
